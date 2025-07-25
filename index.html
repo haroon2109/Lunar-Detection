@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar Landslide & Boulder Detection Algorithm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .step-item.active .step-circle {
+            background-color: #2C3E50; 
+            border-color: #2C3E50;
+            color: white;
+        }
+        .step-item.active .step-title {
+            color: #2C3E50;
+        }
+        .step-pane-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .step-item.active .step-pane-content {
+            max-height: 500px;
+        }
+        .ai-output-box {
+            background-color: #f0f4f8;
+            border-left: 4px solid #FFD700;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            color: #2C3E50;
+        }
+        .ai-input {
+            border: 1px solid #ccc;
+            border-radius: 0.375rem;
+            padding: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #333;
+        }
+        .ai-button {
+            background-color: #2C3E50;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .ai-button:hover {
+            background-color: #34495E;
+        }
+        .ai-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .detection-canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px; 
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden; 
+            background-color: #f8f8f8;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .detection-canvas {
+            display: block;
+            width: 100%;
+            height: auto; 
+        }
+    </style>
+</head>
+<body class="bg-[#F8F8F8] text-slate-800">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-[#2C3E50]">Lunar Detection Algorithm</h1>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#algorithm-workflow" class="text-slate-600 hover:text-[#2C3E50] font-medium">Algorithm</a>
+                    <a href="#ai-insights" class="text-slate-600 hover:text-[#2C3E50] font-medium">AI Insights</a>
+                    <a href="#sample-detection" class="text-slate-600 hover:text-[#2C3E50] font-medium">Sample</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- Introduction -->
+        <section class="text-center mb-16">
+            <h2 class="text-4xl font-extrabold text-slate-900 mb-4">Automated Lunar Landslide & Boulder Detection</h2>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                Explore our novel algorithm designed to identify and quantify critical surface features on the Moon using high-resolution Chandrayaan imagery. This system enhances lunar mission safety and scientific understanding.
+            </p>
+        </section>
+
+        <section id="algorithm-workflow" class="mb-20">
+            <h3 class="text-3xl font-bold text-center text-slate-900 mb-12">Our Novel Detection Algorithm Workflow</h3>
+            <div class="lg:grid lg:grid-cols-12 lg:gap-12 items-start">
+                
+                <div class="lg:col-span-4 mb-8 lg:mb-0">
+                    <div id="algorithm-stepper" class="space-y-4">
+                        <!-- Step 1 -->
+                        <div class="step-item active" data-step="1">
+                            <div class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                <div class="step-circle flex-shrink-0 w-10 h-10 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-slate-500 transition-colors">1</div>
+                                <div class="ml-4">
+                                    <h4 class="step-title font-bold text-lg text-slate-700 transition-colors">Input Data</h4>
+                                    <p class="text-sm text-slate-500">Chandrayaan Imagery</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="step-item" data-step="2">
+                             <div class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                <div class="step-circle flex-shrink-0 w-10 h-10 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-slate-500 transition-colors">2</div>
+                                <div class="ml-4">
+                                    <h4 class="step-title font-bold text-lg text-slate-700 transition-colors">Pre-processing & Normalization</h4>
+                                    <p class="text-sm text-slate-500">Image preparation</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="step-item" data-step="3">
+                             <div class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                <div class="step-circle flex-shrink-0 w-10 h-10 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-slate-500 transition-colors">3</div>
+                                <div class="ml-4">
+                                    <h4 class="step-title font-bold text-lg text-slate-700 transition-colors">Feature Extraction</h4>
+                                    <p class="text-sm text-slate-500">Identifying key characteristics</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="step-item" data-step="4">
+                             <div class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                <div class="step-circle flex-shrink-0 w-10 h-10 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-slate-500 transition-colors">4</div>
+                                <div class="ml-4">
+                                    <h4 class="step-title font-bold text-lg text-slate-700 transition-colors">Detection Modules</h4>
+                                    <p class="text-sm text-slate-500">Landslides & Boulders</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 5 -->
+                        <div class="step-item" data-step="5">
+                             <div class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                <div class="step-circle flex-shrink-0 w-10 h-10 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-slate-500 transition-colors">5</div>
+                                <div class="ml-4">
+                                    <h4 class="step-title font-bold text-lg text-slate-700 transition-colors">Quantification & Metadata</h4>
+                                    <p class="text-sm text-slate-500">Size and image details</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Step 6 -->
+                        <div class="step-item" data-step="6">
+                             <div class="flex items-center cursor-pointer p-3 rounded-lg hover:bg-slate-100 transition-colors">
+                                <div class="step-circle flex-shrink-0 w-10 h-10 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-slate-500 transition-colors">6</div>
+                                <div class="ml-4">
+                                    <h4 class="step-title font-bold text-lg text-slate-700 transition-colors">Output & Active Regions</h4>
+                                    <p class="text-sm text-slate-500">Results and dynamic zones</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step Content -->
+                <div class="lg:col-span-8 bg-white p-8 rounded-xl shadow-lg">
+                    <div id="step-content">
+                        <!-- Content for Step 1 -->
+                        <div class="step-pane active" data-pane="1">
+                            <h4 class="text-2xl font-bold text-[#2C3E50] mb-4">1. Input Data</h4>
+                            <p class="text-slate-600 mb-6">Our algorithm begins by ingesting high-resolution imagery from India's Chandrayaan missions. This raw data forms the foundation for all subsequent analysis.</p>
+                            <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                <li>**Chandrayaan-1/2 – Terrain Mapping Camera (TMC):** Provides stereo imagery crucial for topographic analysis.</li>
+                                <li>**Chandrayaan-2 – Terrain Mapping camera derived Digital Terrain Model (DTM):** Essential for understanding lunar topography and identifying slopes.</li>
+                                <li>**Chandrayaan-2 – Optical High Resolution Camera (OHRC):** Offers unparalleled 0.25m resolution for detailed feature detection.</li>
+                            </ul>
+                        </div>
+                        <!-- Content for Step 2 -->
+                        <div class="step-pane hidden" data-pane="2">
+                             <h4 class="text-2xl font-bold text-[#2C3E50] mb-4">2. Pre-processing & Normalization</h4>
+                            <p class="text-slate-600 mb-6">Raw lunar images undergo rigorous pre-processing to ensure data quality and consistency, preparing them for detailed feature extraction.</p>
+                             <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                <li>**Radiometric & Geometric Correction:** Adjusting pixel values for illumination variations and correcting spatial distortions.</li>
+                                <li>**DEM Generation:** Creating precise Digital Elevation Models from stereo pairs (TMC/TMC-2) to understand lunar topography.</li>
+                            </ul>
+                        </div>
+                        <!-- Content for Step 3 -->
+                        <div class="step-pane hidden" data-pane="3">
+                            <h4 class="text-2xl font-bold text-[#2C3E50] mb-4">3. Feature Extraction</h4>
+                            <p class="text-slate-600 mb-6">Once pre-processed, the algorithm extracts various features that are indicative of landslides and boulders, transforming raw pixels into meaningful data points.</p>
+                             <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                <li>**Topographic Features:** Deriving slope, aspect, and curvature from DEMs to identify unstable areas and flow paths.</li>
+                                <li>**Textural Features:** Analyzing patterns (e.g., using Grey-Level Co-occurrence Matrix - GLCM) to distinguish the rough, chaotic textures of debris from surrounding terrains.</li>
+                            </ul>
+                        </div>
+                        <!-- Content for Step 4 -->
+                        <div class="step-pane hidden" data-pane="4">
+                            <h4 class="text-2xl font-bold text-[#2C3E50] mb-4">4. Detection Modules (Hybrid Deep Learning Core)</h4>
+                            <p class="text-slate-600 mb-6">This is the core of our algorithm, employing specialized modules for each feature type.</p>
+                             <div class="mb-6">
+                                <h5 class="font-bold text-lg text-slate-700 mb-2">Landslide Detection:</h5>
+                                <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                    <li>**Random Forest Classifier:** Utilizes a robust ensemble learning method, trained on extracted features, to classify and delineate landslide areas with high accuracy.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-lg text-slate-700 mb-2">Boulder Detection:</h5>
+                                <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                    <li>**High-Resolution Image Processing:** Employs advanced techniques like adaptive thresholding and enhanced edge detection on OHRC imagery to precisely identify individual boulder boundaries.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Content for Step 5 -->
+                        <div class="step-pane hidden" data-pane="5">
+                            <h4 class="text-2xl font-bold text-[#2C3E50] mb-4">5. Quantification & Metadata Output</h4>
+                            <p class="text-slate-600 mb-6">Beyond simple detection, our algorithm provides precise measurements and comprehensive contextual data for each identified feature.</p>
+                             <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                <li>**Landslide Quantification:** Measures **length**, **width**, and estimates the total affected area. Includes **latitude** and **longitude** of its centroid. Volume can be estimated if pre-event DEMs are available.</li>
+                                <li>**Boulder Quantification:** Determines **diameter** (longest/shortest axis), **radius**, estimates height using shadow analysis or DEM data, and calculates approximate volume. Includes **latitude** and **longitude** of its centroid.</li>
+                                <li>**Image Information Decoding:** Extracts critical metadata like image ID, acquisition date, instrument source, geographic coordinates, spatial resolution, and illumination angles for every analyzed image.</li>
+                            </ul>
+                        </div>
+                        <!-- Content for Step 6 -->
+                        <div class="step-pane hidden" data-pane="6">
+                            <h4 class="text-2xl font-bold text-[#2C3E50] mb-4">6. Output & Active Region Identification</h4>
+                            <p class="text-slate-600 mb-6">The final output provides actionable insights, including visual maps and identification of dynamically changing lunar regions.</p>
+                             <ul class="list-disc list-inside space-y-2 text-slate-700">
+                                <li>**Graphical Maps:** High-resolution lunar imagery overlaid with clear markings of detected landslides and boulders.</li>
+                                <li>**Detailed Feature Inventories:** Comprehensive tabular data for each identified feature, including its dimensions and contextual information.</li>
+                                <li>**Active Region Identification:** Spatial density mapping and temporal change detection (where multi-temporal data is available) to highlight areas with frequent mass movements, indicating ongoing geological activity.</li>
+                                <li>**Feature Counts:** Provides the total number of detected landslides and boulders within the analyzed region.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI-Powered Insights Section -->
+        <section id="ai-insights" class="mb-20 max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+            <h3 class="text-3xl font-bold text-center text-slate-900 mb-12">AI-Powered Insights</h3>
+            <p class="text-slate-600 text-center mb-8">
+                Leverage AI to gain deeper understanding. Upload an image to simulate analysis and get geological interpretations, or get quick explanations of algorithm concepts.
+            </p>
+
+            <!-- API Key Input -->
+            <div class="mb-6 p-4 border border-amber-300 bg-amber-50 rounded-lg text-amber-800 text-sm">
+                <p class="font-semibold mb-2">💡 Gemini API Key Required:</p>
+                <p class="mb-2">If AI features are not working, please paste your Gemini API key below. Get one from <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline text-amber-700 hover:text-amber-900">Google AI Studio</a>.</p>
+                <input type="password" id="apiKeyInput" class="ai-input w-full p-2 text-sm" placeholder="Paste your Gemini API Key here (e.g., AIzaSy...)" autocomplete="off">
+            </div>
+
+            <!-- AI Geological Insight -->
+            <div class="mb-10 p-6 border border-slate-200 rounded-lg bg-slate-50">
+                <h4 class="text-xl font-bold text-[#2C3E50] mb-4">✨ AI Geological Insight</h4>
+                
+                <div class="mb-4">
+                    <label for="aiImageUpload" class="block text-slate-700 text-sm font-semibold mb-2">
+                        Upload Lunar Image (for simulated analysis)
+                    </label>
+                    <input
+                        type="file"
+                        id="aiImageUpload"
+                        accept="image/*"
+                        class="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-[#2C3E50] file:text-white
+                            hover:file:bg-[#34495E] cursor-pointer"
+                    />
+                    <div id="aiSelectedImagePreviewContainer" class="mt-4 text-center hidden">
+                        <img id="aiSelectedImagePreview" src="" alt="Selected Lunar Image for AI" class="max-w-full h-auto rounded-lg shadow-md mx-auto border border-slate-300" style="max-height: 200px;">
+                        <p class="text-sm text-slate-500 mt-2">Image uploaded for simulated analysis.</p>
+                    </div>
+                </div>
+
+                <button id="simulateAIAnalysisBtn" class="ai-button w-full mb-4">Simulate Analysis Result from Image</button>
+
+                <div class="mb-4">
+                    <p class="text-slate-700 mb-2">Simulated Analysis Result (AI interprets this text):</p>
+                    <textarea id="simulatedAnalysisResult" class="ai-input h-24 resize-y" placeholder="Click 'Simulate Analysis Result from Image' or type a result here (e.g., Landslide detected at Mare Imbrium (32.8°N, 15.6°W). Length: ~5 km, Width: ~2 km. Estimated volume: 1.2 cubic km.)."></textarea>
+                </div>
+                <button id="getGeologicalInsightBtn" class="ai-button w-full mb-4">Get Geological Insight</button>
+                <div id="geologicalInsightOutput" class="ai-output-box hidden"></div>
+            </div>
+
+            <!-- Feature Description Generator -->
+            <div class="mb-10 p-6 border border-slate-200 rounded-lg bg-slate-50">
+                <h4 class="text-xl font-bold text-[#2C3E50] mb-4">✨ Feature Description Generator</h4>
+                <div class="mb-4">
+                    <p class="text-slate-700 mb-2">Simulated Detection Summary:</p>
+                    <textarea id="featureSummaryInput" class="ai-input h-20 resize-y" placeholder="e.g., Detected: 3 large landslides, 15 scattered boulders, 5 simple craters."></textarea>
+                </div>
+                <button id="getFeatureDescriptionBtn" class="ai-button w-full mb-4">Describe Features</button>
+                <div id="featureDescriptionOutput" class="ai-output-box hidden"></div>
+            </div>
+
+            <!-- Mission Impact Assessor -->
+            <div class="mb-10 p-6 border border-slate-200 rounded-lg bg-slate-50">
+                <h4 class="text-xl font-bold text-[#2C3E50] mb-4">✨ Mission Impact Assessor</h4>
+                <div class="mb-4">
+                    <p class="text-slate-700 mb-2">Simulated Area Characteristics:</p>
+                    <textarea id="missionImpactInput" class="ai-input h-24 resize-y" placeholder="e.g., Region: steep slopes, high boulder density, active landslides. Mission Type: Rover traverse."></textarea>
+                </div>
+                <button id="getMissionImpactBtn" class="ai-button w-full mb-4">Assess Mission Impact</button>
+                <div id="missionImpactOutput" class="ai-output-box hidden"></div>
+            </div>
+
+
+            <!-- Algorithm Step Explainer -->
+            <div class="p-6 border border-slate-200 rounded-lg bg-slate-50">
+                <h4 class="text-xl font-bold text-[#2C3E50] mb-4">✨ Algorithm Step Explainer</h4>
+                <input type="text" id="algorithmQueryInput" class="ai-input mb-4" placeholder="e.g., GLCM, Random Forest, Adaptive Thresholding">
+                <button id="explainAlgorithmStepBtn" class="ai-button w-full mb-4">Explain Algorithm Step</button>
+                <div id="algorithmExplanationOutput" class="ai-output-box hidden"></div>
+            </div>
+        </section>
+
+        <!-- Sample Detection Visual -->
+        <section id="sample-detection" class="mb-20 text-center max-w-5xl mx-auto">
+            <h3 class="text-3xl font-bold text-slate-900 mb-4">Sample Detection Visual</h3>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600 mb-12">
+                Upload your own lunar image and see a simulated detection of landslides, boulders, and craters!
+            </p>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="mb-6">
+                    <label for="detectionImageUpload" class="block text-slate-700 text-sm font-semibold mb-2">
+                        Upload Image for Detection Simulation
+                    </label>
+                    <input
+                        type="file"
+                        id="detectionImageUpload"
+                        accept="image/*"
+                        class="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-indigo-600 file:text-white
+                            hover:file:bg-indigo-700 cursor-pointer"
+                    />
+                </div>
+
+                <div class="detection-canvas-container">
+                    <canvas id="detectionCanvas" class="detection-canvas"></canvas>
+                </div>
+                <p id="canvasStatus" class="text-sm text-slate-500 mt-2">Upload an image above to begin.</p>
+
+                <button id="simulateDetectionBtn" class="ai-button w-full mt-6 bg-green-600 hover:bg-green-700">Simulate Detection on Image</button>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+            <p class="text-sm text-slate-400">Project done by Holderzz, Bharatiya Antariksh Hackathon 2025.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Stepper functionality
+            const stepper = document.getElementById('algorithm-stepper');
+            const stepItems = stepper.querySelectorAll('.step-item');
+            const stepPanes = document.querySelectorAll('.step-pane');
+
+            stepper.addEventListener('click', function (e) {
+                const stepItem = e.target.closest('.step-item');
+                if (!stepItem) return;
+
+                const stepNumber = stepItem.dataset.step;
+
+                // Update active step item
+                stepItems.forEach(item => item.classList.remove('active'));
+                stepItem.classList.add('active');
+
+                // Show corresponding pane
+                stepPanes.forEach(pane => {
+                    if (pane.dataset.pane === stepNumber) {
+                        pane.classList.remove('hidden');
+                        pane.classList.add('active');
+                    } else {
+                        pane.classList.add('hidden');
+                        pane.classList.remove('active');
+                    }
+                });
+            });
+
+            // AI Features Logic (API Key, Image Upload, Insight Generation)
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const aiImageUploadInput = document.getElementById('aiImageUpload');
+            const aiSelectedImagePreview = document.getElementById('aiSelectedImagePreview');
+            const aiSelectedImagePreviewContainer = document.getElementById('aiSelectedImagePreviewContainer');
+            const simulateAIAnalysisBtn = document.getElementById('simulateAIAnalysisBtn');
+            const simulatedAnalysisResultInput = document.getElementById('simulatedAnalysisResult');
+            const getGeologicalInsightBtn = document.getElementById('getGeologicalInsightBtn');
+            const geologicalInsightOutput = document.getElementById('geologicalInsightOutput');
+            const algorithmQueryInput = document.getElementById('algorithmQueryInput');
+            const explainAlgorithmStepBtn = document.getElementById('explainAlgorithmStepBtn');
+            const algorithmExplanationOutput = document.getElementById('algorithmExplanationOutput');
+
+            // New elements for Feature Description Generator
+            const featureSummaryInput = document.getElementById('featureSummaryInput');
+            const getFeatureDescriptionBtn = document.getElementById('getFeatureDescriptionBtn');
+            const featureDescriptionOutput = document.getElementById('featureDescriptionOutput');
+
+            // New elements for Mission Impact Assessor
+            const missionImpactInput = document.getElementById('missionImpactInput');
+            const getMissionImpactBtn = document.getElementById('getMissionImpactBtn');
+            const missionImpactOutput = document.getElementById('missionImpactOutput');
+
+
+            let currentAIUploadedImage = null; 
+
+            aiImageUploadInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    currentAIUploadedImage = URL.createObjectURL(file);
+                    aiSelectedImagePreview.src = currentAIUploadedImage;
+                    aiSelectedImagePreviewContainer.classList.remove('hidden');
+                    simulatedAnalysisResultInput.value = ''; 
+                    geologicalInsightOutput.classList.add('hidden'); 
+                } else {
+                    currentAIUploadedImage = null;
+                    aiSelectedImagePreview.src = '';
+                    aiSelectedImagePreviewContainer.classList.add('hidden');
+                }
+            });
+
+            simulateAIAnalysisBtn.addEventListener('click', function() {
+                if (!currentAIUploadedImage) {
+                    simulatedAnalysisResultInput.value = 'Please upload an image first to simulate analysis.';
+                    return;
+                }
+                const simulatedResults = [
+                    "Simulated analysis of the uploaded image reveals a large impact crater with a complex central peak. Several small landslides are visible on the inner walls, and a dense field of boulders (diameters 2-15m) is scattered across the ejecta blanket. Also detected 8 craters (0.5km - 2km diameter).",
+                    "Analysis of the uploaded image shows a relatively smooth mare region. No major landslides detected. A few isolated boulders (diameters 1-5m) are sparsely distributed, likely remnants of distant impacts. Detected 3 craters (0.1km - 0.5km diameter).",
+                    "The uploaded image displays a steep crater rim with evidence of recent mass wasting. A significant landslide scar is present, leading to a debris flow extending approximately 1.5 km. Multiple large boulders (diameters 10-30m) are concentrated at the toe of the landslide. Detected 6 craters (0.2km - 1km diameter)."
+                ];
+                simulatedAnalysisResultInput.value = simulatedResults[Math.floor(Math.random() * simulatedResults.length)];
+                geologicalInsightOutput.classList.add('hidden'); 
+            });
+
+            async function callGeminiAPI(prompt, outputElement, buttonElement) {
+                let apiKey = apiKeyInput.value.trim(); 
+                if (!apiKey) {
+                    apiKey = "";
+                }
+
+                buttonElement.disabled = true;
+                outputElement.classList.remove('hidden');
+                outputElement.innerHTML = '<div class="flex items-center justify-center py-4"><svg class="animate-spin h-5 w-5 text-[#2C3E50]" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 _0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="ml-2 text-slate-600">Generating...</span></div>';
+
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        outputElement.innerHTML = `<p>${text}</p>`;
+                    } else {
+                        outputElement.innerHTML = '<p class="text-red-600">Could not get a response. Please try again. (Check API Key or console for errors)</p>';
+                    }
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    outputElement.innerHTML = '<p class="text-red-600">Error: Failed to connect to AI. Check API Key or console for details.</p>';
+                } finally {
+                    buttonElement.disabled = false;
+                }
+            }
+
+            getGeologicalInsightBtn.addEventListener('click', function() {
+                const analysisResult = simulatedAnalysisResultInput.value.trim();
+                if (!analysisResult) {
+                    geologicalInsightOutput.classList.remove('hidden');
+                    geologicalInsightOutput.innerHTML = '<p class="text-red-600">Please enter a simulated analysis result.</p>';
+                    return;
+                }
+                const prompt = `Given the following simulated lunar surface analysis result: "${analysisResult}". Provide a brief geological interpretation of these findings and their potential implications for lunar exploration or science. Keep it concise, around 100-150 words.`;
+                callGeminiAPI(prompt, geologicalInsightOutput, getGeologicalInsightBtn);
+            });
+
+            // Feature Description Generator Logic
+            getFeatureDescriptionBtn.addEventListener('click', function() {
+                const summary = featureSummaryInput.value.trim();
+                if (!summary) {
+                    featureDescriptionOutput.classList.remove('hidden');
+                    featureDescriptionOutput.innerHTML = '<p class="text-red-600">Please enter a simulated detection summary.</p>';
+                    return;
+                }
+                const prompt = `Based on the following simulated lunar feature detection summary: "${summary}", describe the types of features detected and their general characteristics in a concise and informative paragraph.`;
+                callGeminiAPI(prompt, featureDescriptionOutput, getFeatureDescriptionBtn);
+            });
+
+            // Mission Impact Assessor Logic
+            getMissionImpactBtn.addEventListener('click', function() {
+                const characteristics = missionImpactInput.value.trim();
+                if (!characteristics) {
+                    missionImpactOutput.classList.remove('hidden');
+                    missionImpactOutput.innerHTML = '<p class="text-red-600">Please enter simulated area characteristics for mission impact assessment.</p>';
+                    return;
+                }
+                const prompt = `Given these simulated lunar surface characteristics and features: "${characteristics}", assess the potential impact (challenges and opportunities) this region might present for a typical robotic or human lunar mission. Keep it concise, around 100-150 words.`;
+                callGeminiAPI(prompt, missionImpactOutput, getMissionImpactBtn);
+            });
+
+            explainAlgorithmStepBtn.addEventListener('click', function() {
+                const query = algorithmQueryInput.value.trim();
+                if (!query) {
+                    algorithmExplanationOutput.classList.remove('hidden');
+                    algorithmExplanationOutput.innerHTML = '<p class="text-red-600">Please enter an algorithm step to explain.</p>';
+                    return;
+                }
+                const prompt = `Explain the following term or concept related to lunar image processing and landslide/boulder detection algorithms in a concise and easy-to-understand manner, suitable for a technical presentation: "${query}". Focus on its relevance to the project. Keep it under 100 words.`;
+                callGeminiAPI(prompt, algorithmExplanationOutput, explainAlgorithmStepBtn);
+            });
+
+            // Sample Detection Visual Logic (Canvas)
+            const detectionImageUpload = document.getElementById('detectionImageUpload');
+            const detectionCanvas = document.getElementById('detectionCanvas');
+            const ctx = detectionCanvas.getContext('2d');
+            const simulateDetectionBtn = document.getElementById('simulateDetectionBtn');
+            const canvasStatus = document.getElementById('canvasStatus');
+            let uploadedDetectionImage = new Image();
+            let imageLoaded = false;
+
+            // Function to resize canvas to fit parent and maintain aspect ratio
+            function resizeCanvas() {
+                const container = detectionCanvas.parentElement;
+                const containerWidth = container.offsetWidth;
+                
+                if (uploadedDetectionImage.width && uploadedDetectionImage.height) {
+                    const aspectRatio = uploadedDetectionImage.height / uploadedDetectionImage.width;
+                    detectionCanvas.width = containerWidth;
+                    detectionCanvas.height = containerWidth * aspectRatio;
+                } else {
+                   
+                    detectionCanvas.width = containerWidth;
+                    detectionCanvas.height = containerWidth * 0.5; // Example aspect ratio
+                }
+                if (imageLoaded) {
+                    drawUploadedImageAndSimulateDetection();
+                }
+            }
+
+            // Draw image and simulated detections
+            function drawUploadedImageAndSimulateDetection() {
+                ctx.clearRect(0, 0, detectionCanvas.width, detectionCanvas.height);
+                if (imageLoaded) {
+                    // Draw the image scaled to fit the canvas
+                    ctx.drawImage(uploadedDetectionImage, 0, 0, detectionCanvas.width, detectionCanvas.height);
+
+                    // Simulate drawing bounding boxes for landslides (green rectangles)
+                    ctx.strokeStyle = '#22c55e'; // Green color for landslides and boulders
+                    ctx.lineWidth = 2;
+                    const numLandslides = Math.floor(Math.random() * 3) + 1; // 1 to 3 landslides
+                    for (let i = 0; i < numLandslides; i++) {
+                        const x = Math.random() * (detectionCanvas.width * 0.7);
+                        const y = Math.random() * (detectionCanvas.height * 0.7);
+                        const width = detectionCanvas.width * (0.15 + Math.random() * 0.25); // Larger, wider
+                        const height = detectionCanvas.height * (0.08 + Math.random() * 0.15); // Shorter, more like a flow
+                        ctx.strokeRect(x, y, width, height);
+                    }
+
+                    // Simulate drawing bounding boxes for boulders (green squares/rectangles)
+                    const numBoulders = Math.floor(Math.random() * 10) + 5; // 5 to 15 boulders
+                    for (let i = 0; i < numBoulders; i++) {
+                        const x = Math.random() * (detectionCanvas.width * 0.9);
+                        const y = Math.random() * (detectionCanvas.height * 0.9);
+                        const size = detectionCanvas.width * (0.01 + Math.random() * 0.05); // Smaller, squarer
+                        ctx.strokeRect(x, y, size, size);
+                    }
+
+                    // Simulate drawing circles for craters/holes (yellow circles)
+                    ctx.strokeStyle = '#FFD700'; // Gold/Yellow color for craters
+                    ctx.lineWidth = 2;
+                    const numCraters = Math.floor(Math.random() * 8) + 3; // 3 to 10 craters
+                    for (let i = 0; i < numCraters; i++) {
+                        const centerX = Math.random() * detectionCanvas.width;
+                        const centerY = Math.random() * detectionCanvas.height;
+                        const radius = detectionCanvas.width * (0.02 + Math.random() * 0.07); // Varying sizes
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, false);
+                        ctx.stroke();
+                    }
+
+                    canvasStatus.textContent = "Simulated detection applied: Landslides (green rectangles), Boulders (green squares), Craters (yellow circles)!";
+                } else {
+                    canvasStatus.textContent = "Upload an image above to begin.";
+                }
+            }
+
+            // Handle file input change
+            detectionImageUpload.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    canvasStatus.textContent = "Loading image...";
+                    imageLoaded = false;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedDetectionImage.onload = function() {
+                            imageLoaded = true;
+                            resizeCanvas(); // Resize canvas to fit image aspect ratio
+                            drawUploadedImageAndSimulateDetection(); // Draw image and initial detection
+                            canvasStatus.textContent = "Image loaded. Click 'Simulate Detection' to re-apply.";
+                        };
+                        uploadedDetectionImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imageLoaded = false;
+                    ctx.clearRect(0, 0, detectionCanvas.width, detectionCanvas.height);
+                    canvasStatus.textContent = "Upload an image above to begin.";
+                }
+            });
+
+            // Handle simulate detection button click
+            simulateDetectionBtn.addEventListener('click', function() {
+                if (imageLoaded) {
+                    drawUploadedImageAndSimulateDetection();
+                } else {
+                    canvasStatus.textContent = "Please upload an image first!";
+                }
+            });
+
+            // Initial canvas setup and resize listener
+            resizeCanvas(); // Set initial canvas size
+            window.addEventListener('resize', resizeCanvas);
+        });
+    </script>
+
+</body>
+</html>
