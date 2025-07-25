@@ -49,8 +49,7 @@ To run this project locally and explore its features:
 
 1.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME.git](https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME.git)
-    cd YOUR_REPOSITORY_NAME
+    git clone [https://haroon2109.github.io/Lunar-Detection/]
     ```
 
 2.  **Open the Application:**
