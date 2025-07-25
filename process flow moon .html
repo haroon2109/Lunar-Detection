@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Flow Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top to prevent vertical centering issues with large diagrams */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 90%;
+            width: 100%;
+            overflow-x: auto; /* Allow horizontal scrolling if diagram is too wide */
+        }
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Space between steps */
+        }
+        .flow-step {
+            background-color: #e0f2fe; /* Light blue */
+            border: 2px solid #38b2ac; /* Teal border */
+            border-radius: 8px;
+            padding: 15px 25px;
+            text-align: center;
+            font-weight: 600;
+            color: #2c5282; /* Dark blue text */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            min-width: 250px; /* Ensure minimum width for readability */
+            max-width: 350px;
+        }
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+        .flow-sub-step {
+            background-color: #f0f9ff; /* Lighter blue */
+            border: 1px dashed #63b3ed; /* Dashed blue border */
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #4a5568; /* Gray text */
+            text-align: left;
+        }
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #38b2ac; /* Teal arrow */
+            margin: 5px 0;
+        }
+        .module-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid #a0aec0; /* Gray border for module group */
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #edf2f7; /* Light gray background */
+            width: 100%; /* Take full width within container */
+            box-sizing: border-box;
+        }
+        .module-title {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Our Novel Algorithm Workflow</h2>
+        <div class="flow-container">
+            <div class="flow-step">Start</div>
+            <div class="arrow"></div>
+            <div class="flow-step">
+                Input Data: Chandrayaan-1 & 2 Imagery
+                <div class="flow-sub-step">(OHRC, TMC)</div>
+            </div>
+            <div class="arrow"></div>
+            <div class="flow-step">
+                Data Pre-processing & Normalization
+                <div class="flow-sub-step">- Radiometric & Geometric Correction</div>
+                <div class="flow-sub-step">- DEM Generation (from TMC stereo pairs)</div>
+            </div>
+            <div class="arrow"></div>
+            <div class="flow-step">
+                Feature Extraction
+                <div class="flow-sub-step">- Topographic Features (Slope, Curvature)</div>
+                <div class="flow-sub-step">- Textural Features (GLCM)</div>
+            </div>
+            <div class="arrow"></div>
+
+            <div class="module-group">
+                <div class="module-title">Hybrid Deep Learning Core</div>
+                <div class="flow-step">
+                    Landslide Detection Module
+                    <div class="flow-sub-step">- Random Forest Classifier (Classification & Delineation)</div>
+                </div>
+                <div class="arrow"></div>
+                <div class="flow-step">
+                    Boulder Detection Module
+                    <div class="flow-sub-step">- High-Resolution Image Processing (Edge Detection, Adaptive Thresholding)</div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+            <div class="flow-step">
+                Size Measurement & Quantification
+                <div class="flow-sub-step">- Landslides: Length, Width, Area, Volume (if possible)</div>
+                <div class="flow-sub-step">- Boulders: Diameter, Height, Volume</div>
+            </div>
+            <div class="arrow"></div>
+            <div class="flow-step">
+                Image Information Decoding & Metadata Output
+                <div class="flow-sub-step">- Extracting image acquisition details, illumination angles, etc.</div>
+            </div>
+            <div class="arrow"></div>
+            <div class="flow-step">
+                Active Region Identification
+                <div class="flow-sub-step">- Spatial Density Mapping</div>
+                <div class="flow-sub-step">- Temporal Change Detection (if multi-temporal data available)</div>
+            </div>
+            <div class="arrow"></div>
+            <div class="flow-step">
+                Output: Graphical Maps, Detailed Feature Inventories, Explanations
+            </div>
+            <div class="arrow"></div>
+            <div class="flow-step">End</div>
+        </div>
+    </div>
+</body>
+</html>
