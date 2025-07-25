@@ -40,16 +40,6 @@ Our application integrates Large Language Models (LLMs) via the Google Gemini AP
 * **Mission Impact Assessor:** Evaluate potential challenges and opportunities for hypothetical lunar missions based on detected features.
 * **Algorithm Step Explainer:** Get concise explanations for complex algorithm concepts on demand.
 
-### 🖼️ Interactive Simulated Detection Visual
-Upload your own lunar images and witness a live, simulated detection process directly within the browser! Our Canvas-based visualization will **mark landslides with green rectangles, boulders with green squares, and craters with yellow circles**, providing a dynamic demonstration of our algorithm's capabilities.
-
----
-
-## 🌐 Live Demo
-
-Experience the application firsthand:
-
-👉 **[YOUR LIVE DEMO URL HERE]** 👈
 
 ---
 
@@ -89,8 +79,3 @@ To run this project locally and explore its features:
 * **Google Gemini API:** Integrates advanced LLM capabilities for intelligent insights.
 * **HTML Canvas API:** Used for the interactive, simulated feature detection visual.
 
----
-
-## 📸 Visual Showcase
-
-*(Optional: Replace this placeholder with a compelling screenshot or GIF of your application in action!)*
